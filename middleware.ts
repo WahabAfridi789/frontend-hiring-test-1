@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { auth } from "./app/auth";
 
 const apiAuthPrefix = "/api";
-const DEFAULT_LOGIN_REDIRECT = "/calls";
+const DEFAULT_LOGIN_REDIRECT = "/";
 const AUTH_ROUTES = ["/login"];
-const RESTRICTED_ROUTES = ["/calls"];
-const PUBLIC_ROUTES = ["/"];
+const RESTRICTED_ROUTES = ["/"];
+const PUBLIC_ROUTES = [""];
 
 export default auth((req, res) => {
   const session = req.auth;
@@ -21,7 +21,13 @@ export default auth((req, res) => {
   const isLoggedIn = !!session?.user;
   const path = `${url.pathname}`;
 
-  console.log(session);
+  if (isLoggedIn) {
+    // Add Authorization header for API routes
+    const headers = new Headers(req.headers);
+    headers.set("Authorization", `Bearer ${session.user.access_token}`);
+    const response = NextResponse.next({ request: { headers } });
+    return;
+  }
 
   if (isApiAuthRoute) {
     return;

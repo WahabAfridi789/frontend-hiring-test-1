@@ -42,7 +42,7 @@ export default function RootLayout({
       <body
         className={` ${avenir.variable} antialiased font-avenir `}
       >
-        <header className="bg-white border-b  shadow-sm  px-8 py-6">
+        <header className=" border-b   shadow-sm  px-8 py-6">
 
           <Header />
         </header>

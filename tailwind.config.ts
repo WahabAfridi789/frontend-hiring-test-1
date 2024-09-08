@@ -13,6 +13,16 @@ const config: Config = {
         avenir: "var(--font-avenir)",
       },
       colors: {
+        call: {
+          anwered: "#00E676",
+          "answered-outline": "#B2DFDB",
+          unarchived: "#F5F5F5",
+          "unarchived-outline": "#B2DFDB",
+          missed: "#FF3D00",
+          voicemail: "#4F45F8",
+          primary: "#4F45F8",
+          secondary: "#FF8A65",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -24,8 +34,8 @@ const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#4F45F8",
+          foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",

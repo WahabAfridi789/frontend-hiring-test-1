@@ -1,35 +1,35 @@
 import NextAuth, { Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   providers: [
     CredentialsProvider({
       id: "credentials",
       name: "credentials",
-      credentials: {
-        email: { label: "email", type: "email" },
-        password: { label: "password", type: "password" },
-        domain_name: { type: "text" },
-      },
       authorize: async (credentials) => {
         if (!credentials) {
           throw new Error("No credentials provided");
         }
 
         try {
-          const { email, password, domain_name } = credentials || {};
+          const { username, password } = credentials || {};
+
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_USER_URL}/login`,
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               credentials: "include",
-              body: JSON.stringify({ email, password, domain_name }),
+              body: JSON.stringify({ username, password }),
             }
           );
+
+          if (response.status === 201) {
+            const result = await response.json();
+            return result;
+          }
 
           if (response.status === 401) {
             const errorData = await response.json();
@@ -38,23 +38,10 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
               message: errorData.meta.message,
             };
           }
-          const result = await response.json();
-          if (result.meta.code === 1) {
-            const user = result.data;
-            user.domain = domain_name;
-            return user;
-          } else {
-            throw new Error("Invalid login credentials");
-          }
         } catch (error: any) {
-          // console.error("Authorization error:", error);
           throw new Error(error.message || "Authorization error");
         }
       },
-    }),
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
 
@@ -63,24 +50,33 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
       session.user = { ...token.user };
       return session;
     },
-    async jwt({ token, user, trigger, session, account, profile }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.user = { ...user };
+        token.user = {
+          // @ts-ignore
+          access_token: user.access_token,
+          id: user.id,
+          // @ts-ignore
+          username: user.user?.username,
+          // @ts-ignore
+          refresh_token: user.refresh_token,
+        };
         return token;
       }
 
       return token;
     },
-    async signIn({ user, profile, account }) {
-      let isAuthorized = false;
-      if (user.email) {
+    async signIn({ user }) {
+      const isAuthorized = false;
+      //@ts-ignore
+      if (user?.access_token) {
         return true;
       }
       return isAuthorized;
     },
   },
   session: {
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 1 * 24 * 60, // 7 days
   },
   pages: {
     signIn: "/login",

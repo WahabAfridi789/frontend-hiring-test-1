@@ -1,70 +1,72 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { LockClosedIcon, PersonIcon } from "@radix-ui/react-icons"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { toast } from "@/hooks/use-toast"
-
+import { loginAction } from "@/actions/auth.actions"
 import { Button } from "@/components/ui/button"
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+    Form
 } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { LoginFormSchema } from "@/schema"
+import { Loader } from "lucide-react"
+import { CustomFormField, FormFieldType } from "../shared/custom-form-input"
 
-const FormSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-
-
-
-})
 
 export function LoginForm() {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<z.infer<typeof LoginFormSchema>>({
+        resolver: zodResolver(LoginFormSchema),
         defaultValues: {
             username: "",
+            password: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
-
-        toast({
-            title: "Success",
-            variant: "default",
-            description: "Hellloo"
-        })
-
+    async function onSubmit(data: z.infer<typeof LoginFormSchema>) {
+        await loginAction(data)
     }
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-                <FormField
+
+                <CustomFormField
                     control={form.control}
+                    label="User Name"
                     name="username"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <FormControl>
-                                <Input placeholder="shadcn" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                                This is your public display name.
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
+                    placeholder="Enter your username"
+                    fieldType={FormFieldType.INPUT}
+                    icon={<PersonIcon />}
+
+
+
                 />
-                <Button type="submit">Submit</Button>
+
+                <CustomFormField
+                    control={form.control}
+                    label="Password"
+                    name="password"
+                    placeholder="Enter your password"
+                    fieldType={FormFieldType.PASSWORD_INPUT}
+                    icon={<LockClosedIcon />}
+                />
+
+
+
+
+
+
+
+
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+
+                    {
+                        form.formState.isSubmitting && <Loader className="w-6 h-6 mr-2 animate-spin" />
+                    }
+                    {form.formState.isSubmitting ? "Loging..." : "Login"}
+                </Button>
             </form>
         </Form>
     )
