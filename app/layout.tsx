@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Header } from "@/components/header";
+import { Toaster } from "@/components/ui/toaster"
+
 
 const avenir = localFont({
   src: [
@@ -37,9 +40,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={` ${avenir.variable} antialiased font-avenir`}
+        className={` ${avenir.variable} antialiased font-avenir `}
       >
-        {children}
+        <header className="bg-white border-b  shadow-sm  px-8 py-6">
+
+          <Header />
+        </header>
+        <main className="w-full max-w-7xl mx-auto py-16 min-h-screen">
+          {children}
+        </main>
+        <Toaster />
+
       </body>
     </html>
   );
