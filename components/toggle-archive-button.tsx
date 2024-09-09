@@ -15,15 +15,24 @@ export const ToggleArchiveButton = ({ id, isArchived }: { id: string; isArchived
         try {
             const result = await toggleArchiveAction(id, isArchived);
 
-            if (result) {
+            if (result?.success) {
                 toast({
                     title: "Success",
                     variant: "default",
                     description: `The call has been ${isArchived ? "unarchived" : "archived"} successfully`,
                     duration: 5000,
                 });
-                // Optionally, re-fetch the call data to update the UI
+
             }
+            else {
+                toast({
+                    title: "Error",
+                    variant: "destructive",
+                    description: result?.message,
+                    duration: 5000,
+                });
+            }
+
         } catch (error: any) {
             toast({
                 title: "Error",

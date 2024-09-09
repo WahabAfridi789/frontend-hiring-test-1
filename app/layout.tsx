@@ -46,7 +46,7 @@ export default function RootLayout({
 
           <Header />
         </header>
-        <main className="w-full max-w-7xl mx-auto py-16 min-h-screen">
+        <main className=" py-16 min-h-screen px-16">
           {children}
         </main>
         <Toaster />

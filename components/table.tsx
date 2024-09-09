@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/dialog"
 import { AddNoteBox } from "./add-note-box"
 import { ToggleArchiveButton } from "./toggle-archive-button"
-import { ScrollArea } from "./ui/scroll-area"
-import { Separator } from "./ui/separator"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
 
 
 

@@ -1,29 +1,15 @@
 "use server";
 
-import { auth } from "@/app/auth";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
+import { getUserCookies } from "./auth.actions";
 export async function addNoteAction(formData: FormData) {
   const content = formData.get("content");
   const callId = formData.get("callId");
+  const token = await getUserCookies();
 
-  const headersList = headers();
-
-  headersList.forEach((value, key) => {
-    console.log(key, value);
-  });
-
-  const authorization = headers().get("authorization");
-
-  console.log(authorization); // Logs headers object
-
-  //Data access layer
-  const session = await auth();
-  if (!session) {
-    return {
-      success: false,
-      message: "You must be logged in to add note",
-    };
+  console.log("dds", token);
+  if (!token) {
+    throw new Error("Your session has expired. Please login again");
   }
 
   try {
@@ -33,7 +19,7 @@ export async function addNoteAction(formData: FormData) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.user.access_token}`,
+          Authorization: `Bearer ${token}`,
         },
 
         body: JSON.stringify({ content }),
@@ -61,9 +47,11 @@ export async function addNoteAction(formData: FormData) {
 }
 
 export async function toggleArchiveAction(callId: string, isArchived: boolean) {
-  const session = await auth();
-  if (!session) {
-    return null;
+  const token = await getUserCookies();
+  console.log("dds", token);
+
+  if (!token) {
+    throw new Error("You must be logged in to perform this action");
   }
 
   try {
@@ -73,7 +61,7 @@ export async function toggleArchiveAction(callId: string, isArchived: boolean) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${session.user.access_token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ is_archived: !isArchived }),
       }
@@ -83,9 +71,19 @@ export async function toggleArchiveAction(callId: string, isArchived: boolean) {
     if (response.ok) {
       console.log(data);
       revalidatePath("/");
-      return data;
+      return {
+        success: true,
+        message: `The call has been ${
+          isArchived ? "unarchived" : "archived"
+        } successfully`,
+      };
     }
-    return null;
+    return {
+      success: false,
+      message: `An error occurred while ${
+        isArchived ? "unarchiving" : "archiving"
+      } the call`,
+    };
   } catch (error) {
     console.error(error);
     return null;

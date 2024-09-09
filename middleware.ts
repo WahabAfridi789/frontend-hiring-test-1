@@ -7,7 +7,7 @@ const AUTH_ROUTES = ["/login"];
 const RESTRICTED_ROUTES = ["/"];
 const PUBLIC_ROUTES = [""];
 
-export default auth((req, res) => {
+export default auth(async (req, res) => {
   const session = req.auth;
 
   const { nextUrl } = req;
@@ -19,12 +19,13 @@ export default auth((req, res) => {
   const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname);
   const isRestrictedRoute = RESTRICTED_ROUTES.includes(nextUrl.pathname);
   const isLoggedIn = !!session?.user;
+
   const path = `${url.pathname}`;
 
   if (isLoggedIn) {
     // Add Authorization header for API routes
     const headers = new Headers(req.headers);
-    headers.set("Authorization", `Bearer ${session.user.access_token}`);
+    headers.set("Authorization", `Bearer ${session.user.accessToken}`);
     const response = NextResponse.next({ request: { headers } });
     return;
   }
