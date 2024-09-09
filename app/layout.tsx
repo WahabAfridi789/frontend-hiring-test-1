@@ -30,6 +30,9 @@ const avenir = localFont({
 export const metadata: Metadata = {
   title: "Turing Hiring Test",
   description: "This web app is created for the assement test. ",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
