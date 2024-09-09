@@ -1,7 +1,9 @@
+import { getUserCookies } from "@/actions/auth.actions";
 import { CustomPagination } from "@/components/shared/custom-pagination";
 import { FilterSelection } from "@/components/shared/filter-selection";
 import { CallsTable } from "@/components/table";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 const LIMIT = 10; // Number of items per page
 
 // API call to fetch all calls with error handling
@@ -62,6 +64,12 @@ const CallsPage = async ({
     const page = parseInt(searchParams.page || "1", 10);
     const offset = (page - 1) * LIMIT;
     const filter = searchParams.filter || null;
+
+    //temporary solution to protect this page
+
+    const isAuthenticated = await getUserCookies()
+    if (!isAuthenticated)
+        redirect('/login')
 
     // Fetching calls
     const response = await getAllCalls(offset, LIMIT);

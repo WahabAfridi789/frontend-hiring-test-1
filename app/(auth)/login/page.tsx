@@ -1,5 +1,5 @@
-"use client"
 
+import { getUserCookies } from "@/actions/auth.actions"
 import { LoginForm } from "@/components/auth/login--form"
 import {
     Card,
@@ -8,9 +8,15 @@ import {
     CardHeader,
     CardTitle
 } from "@/components/ui/card"
+import { redirect } from "next/navigation"
 
 
-const LoginPage = () => {
+const LoginPage = async () => {
+    //temporary solution to protect this page
+    const isAuthenticated = await getUserCookies()
+    if (isAuthenticated)
+        redirect('/')
+
     return (
         <section className=" flex h-screen items-center justify-center w-full">
 
