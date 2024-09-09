@@ -76,7 +76,8 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
       // Log the token's expiry time if it's already set
       if (token.expiresAt) {
         // If the token has expired, refresh it
-        if (Date.now() >= token.expiresAt * 1000) {
+        const expiresAt = Number(token.expiresAt);
+        if (Date.now() >= expiresAt * 1000) {
           console.log("Token expired, refreshing token...", token.accessToken);
 
           try {
