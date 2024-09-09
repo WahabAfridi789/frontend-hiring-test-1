@@ -4,14 +4,11 @@ const apiAuthPrefix = "/api";
 const DEFAULT_LOGIN_REDIRECT = "/";
 const AUTH_ROUTES = ["/login"];
 const RESTRICTED_ROUTES = ["/"];
-const PUBLIC_ROUTES = [""];
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
-  const url = req.nextUrl;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
 
   const isAuthRoute = AUTH_ROUTES.includes(nextUrl.pathname);
   const isRestrictedRoute = RESTRICTED_ROUTES.includes(nextUrl.pathname);
@@ -25,14 +22,6 @@ export async function middleware(req: NextRequest) {
     if (isLoggedIn) {
       return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
-    return;
-  }
-
-  if (!isLoggedIn && !isPublicRoute) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
-  }
-
-  if (isLoggedIn && isPublicRoute) {
     return;
   }
 
