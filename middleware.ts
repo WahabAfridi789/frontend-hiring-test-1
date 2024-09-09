@@ -7,7 +7,7 @@ const RESTRICTED_ROUTES = ["/"];
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
-  const baseUrl = req.nextUrl.href;
+  const baseUrl = req.nextUrl.origin;
 
   console.log(new URL("/login", req.url));
 
@@ -27,13 +27,13 @@ export async function middleware(req: NextRequest) {
 
   if (isAuthRoute) {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+      return NextResponse.redirect(baseUrl + DEFAULT_LOGIN_REDIRECT);
     }
     return;
   }
 
   if (isRestrictedRoute && !isLoggedIn)
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(baseUrl + "/login");
 }
 
 export const config = {
